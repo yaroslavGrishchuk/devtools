@@ -2,7 +2,7 @@ package ru.mentee.power;
 
 public class ProgressDemo {
     public static void main(String[] args) {
-        System.out.println("Application started");
+        System.out.println("feature/DVT-3");
         MenteeProgress progress = new MenteeProgress(
                 "Yaroslav", // значение из твоего плана PLAN-2
                 1,               // номер спринта

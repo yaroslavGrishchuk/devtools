@@ -1,6 +1,8 @@
 plugins {
     id 'java'
     id 'application'
+    id 'checkstyle'
+    id 'jacoco'
 }
 
 group = 'ru.mentee.power'
@@ -33,6 +35,49 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+checkstyle {
+    // https://search.maven.org/artifact/com.puppycrawl.tools/checkstyle
+    toolVersion = '14.3.0'
+    maxErrors = 0      // даже 1 ошибка (severity=error) → BUILD FAILED
+    maxWarnings = 999  // предупреждения (severity=warning) не блокируют сборку
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+}
+
+tasks.withType(Checkstyle).configureEach {
+    group = 'verification'
+}
+
+jacoco {
+    // https://search.maven.org/artifact/org.jacoco/org.jacoco.core
+    toolVersion = '0.8.16'
+}
+
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = false
+        csv.required = false
+        html.required = true
+        html.outputLocation = layout.buildDirectory.dir('reports/jacoco/test/html')
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80  // 80% покрытия инструкций
+            }
+        }
+    }
+}
+
+check {
+    dependsOn jacocoTestCoverageVerification
 }

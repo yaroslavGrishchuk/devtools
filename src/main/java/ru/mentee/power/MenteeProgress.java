@@ -6,6 +6,10 @@ public record MenteeProgress(String menteeName, int sprintNumber, int plannedHou
     }
 
     public String summary() {
-        return "Sprint %d → %s: planned %d h".formatted(sprintNumber, menteeName, plannedHoursPerWeek);
+        return "Sprint %d → %s: planned %d h".formatted(
+                sprintNumber,
+                menteeName,
+                plannedHoursPerWeek
+        );
     }
 }

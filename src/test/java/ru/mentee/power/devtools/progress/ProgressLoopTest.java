@@ -1,18 +1,21 @@
 package ru.mentee.power.devtools.progress;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.assertThatCode;
 
 @DisplayName("Тестирование ProgressTracker")
 class ProgressLoopTest {
 
     @Test
     @DisplayName("Суммарный прогресс для нескольких mentee с разным прогрессом")
-    void shouldCalculateTotalProgress_whenMultipleMentees() {
+    void shouldCalculateTotalProgressWhenMultipleMentees() {
         ProgressTracker tracker = new ProgressTracker();
         Mentee[] mentees = {
                 new Mentee("Иван", "Москва", "Backend разработка", 5, 12),
@@ -29,7 +32,7 @@ class ProgressLoopTest {
 
     @Test
     @DisplayName("Все mentee завершили курс — осталось 0")
-    void shouldCalculateTotalProgress_whenAllMenteesCompleted() {
+    void shouldCalculateTotalProgressWhenAllMenteesCompleted() {
         ProgressTracker tracker = new ProgressTracker();
         Mentee[] mentees = {
                 new Mentee("Иван", "Москва", "Backend", 12, 12),
@@ -45,7 +48,7 @@ class ProgressLoopTest {
 
     @Test
     @DisplayName("Исключение, если completedLessons больше totalLessons")
-    void shouldThrow_whenCompletedLessonsGreaterThanTotal() {
+    void shouldThrowWhenCompletedLessonsGreaterThanTotal() {
         assertThatThrownBy(() -> new Mentee("Иван", "Москва", "Backend", 15, 10))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Некорректные значения прогресса");
@@ -53,7 +56,7 @@ class ProgressLoopTest {
 
     @Test
     @DisplayName("Исключение, если completedLessons > totalLessons")
-    void shouldThrow_whenCompletedGreaterThanTotal() {
+    void shouldThrowWhenCompletedGreaterThanTotal() {
         assertThatThrownBy(() -> new Mentee("Иван", "Москва", "Backend", 15, 10))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Некорректные значения прогресса");
@@ -61,7 +64,7 @@ class ProgressLoopTest {
 
     @Test
     @DisplayName("Исключение при отрицательных значениях")
-    void shouldThrow_whenNegativeValues() {
+    void shouldThrowWhenNegativeValues() {
         assertThatThrownBy(() -> new Mentee("Иван", "Москва", "Backend", -1, 10))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Некорректные значения прогресса");
@@ -73,8 +76,25 @@ class ProgressLoopTest {
 
     @Test
     @DisplayName("Корректные значения — исключения нет")
-    void shouldNotThrow_whenValidValues() {
+    void shouldNotThrowWhenValidValues() {
         assertThatCode(() -> new Mentee("Иван", "Москва", "Backend", 5, 12))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("main выводит суммарный прогресс группы")
+    void shouldPrintTotalProgressWhenMainCalled() {
+        PrintStream originalOut = System.out;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(output));
+
+        try {
+            ProgressTracker.main(new String[0]);
+        } finally {
+            System.setOut(originalOut);
+        }
+
+        assertThat(output.toString())
+                .contains("Суммарно: пройдено 25 из 36 уроков, осталось 11 уроков");
     }
 }

@@ -60,13 +60,13 @@ public class StudentListTest {
     @Test
     @DisplayName("addStudent добавляет студента и увеличивает общий счётчик")
     public void checkAddStudent() {
-        StudentList student_list = new StudentList();
+        StudentList list = new StudentList();
 
-        student_list.addStudent(new Student("Nina", "Kazan"));
+        list.addStudent(new Student("Nina", "Kazan"));
 
-        assertThat(student_list.getTotalCount()).isEqualTo(1);
-        assertThat(student_list.isEmpty()).isFalse();
-        assertThat(student_list.getStudentsByCity("Kazan"))
+        assertThat(list.getTotalCount()).isEqualTo(1);
+        assertThat(list.isEmpty()).isFalse();
+        assertThat(list.getStudentsByCity("Kazan"))
                 .containsExactly(new Student("Nina", "Kazan"));
     }
 

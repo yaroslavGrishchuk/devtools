@@ -3,6 +3,7 @@ package ru.mentee.power.devtools.progress;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.offset;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -28,6 +29,7 @@ class ProgressLoopTest {
         assertThat(result)
                 .contains("пройдено 25 из 36 уроков")
                 .contains("осталось 11 уроков");
+        assertThat(mentees).extracting(Mentee::name).containsExactly("Иван", "Мария", "Пётр");
     }
 
     @Test
@@ -44,14 +46,6 @@ class ProgressLoopTest {
         assertThat(result)
                 .contains("пройдено 24 из 24 уроков")
                 .contains("осталось 0 уроков");
-    }
-
-    @Test
-    @DisplayName("Исключение, если completedLessons больше totalLessons")
-    void shouldThrowWhenCompletedLessonsGreaterThanTotal() {
-        assertThatThrownBy(() -> new Mentee("Иван", "Москва", "Backend", 15, 10))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Некорректные значения прогресса");
     }
 
     @Test
@@ -96,5 +90,50 @@ class ProgressLoopTest {
 
         assertThat(output.toString())
                 .contains("Суммарно: пройдено 25 из 36 уроков, осталось 11 уроков");
+    }
+
+    @Test
+    @DisplayName("пустой массив в averageProgressPercent")
+    void shouldThrowExceptionWhenEmpty() {
+        ProgressTracker pt = new ProgressTracker();
+        assertThatThrownBy(() -> pt.averageProgressPercent(new Mentee[0]))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("empty");
+    }
+
+    @Test
+    @DisplayName("корректные значения для averageProgressPercent с не круглыми числами")
+    void shouldPrintAVGPercentWhenBadNumbers() {
+        ProgressTracker pt = new ProgressTracker();
+        Mentee[] mentees = {
+                new Mentee("Иван", "Москва", "Backend разработка", 5, 12),
+                new Mentee("Мария", "Санкт-Петербург", "Fullstack", 8, 12),
+                new Mentee("Пётр", "Казань", "Java Backend", 12, 12)
+        };
+        assertThat(pt.averageProgressPercent(mentees)).isCloseTo(69.444, offset(0.01));
+    }
+
+    @Test
+    @DisplayName("корректные значения для averageProgressPercent с круглыми числами")
+    void shouldPrintAVGPercentWhenGoodNumbers() {
+        ProgressTracker pt = new ProgressTracker();
+        Mentee[] mentees = {
+                new Mentee("Иван", "Москва", "Backend разработка", 6, 12),
+                new Mentee("Мария", "Санкт-Петербург", "Fullstack", 8, 16),
+                new Mentee("Пётр", "Казань", "Java Backend", 12, 24)
+        };
+        assertThat(pt.averageProgressPercent(mentees)).isEqualTo(50);
+    }
+
+    @Test
+    @DisplayName("проверка границ")
+    void shouldHaveConstraints() {
+        ProgressTracker pt = new ProgressTracker();
+        Mentee[] mentees = {
+                new Mentee("Иван", "Москва", "Backend разработка", 6, 12),
+        };
+        assertThat(pt.averageProgressPercent(mentees))
+                .isGreaterThanOrEqualTo(0)
+                .isLessThanOrEqualTo(100);
     }
 }

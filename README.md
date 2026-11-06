@@ -1,6 +1,8 @@
-Правило веток: feature/DVT-X
+[![Java CI](https://github.com/yaroslavGrishchuk/devtools/actions/workflows/ci.yml/badge.svg)](https://github.com/yaroslavGrishchuk/devtools/actions/workflows/ci.yml)
 
-Git локальный цикл
+## Правило веток: feature/DVT-X
+
+## Git локальный цикл
 
 ## Удалённый репозиторий: протокол доступа
 

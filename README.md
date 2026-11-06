@@ -75,3 +75,37 @@ markdown
 ```java
 public List<Student> getStudentsByCityAndCityStartingWithA(
         String city) {
+
+```
+
+## Как называются тесты в этом проекте
+
+Схема: `shouldРезультат_whenУсловие`.
+
+- `should...` — что проверяем (ожидаемое поведение).
+- `when...` — при каком условии.
+
+Примеры:
+- `shouldCalculateTotalProgress_whenMultipleMentees`
+- `shouldThrowException_whenMenteeListIsEmpty`
+- `shouldReturnAveragePercent_whenProgressIsFractional`
+- `shouldReturnAveragePercent_whenProgressIsRound`
+- `shouldReturnPercentWithinBounds_whenSomeMenteesNotCompleted`
+
+Зачем: при падении в CI читается имя метода, а не тело. Плохие имена (`test1`, `testMentee`)
+заставляют каждый раз открывать код.
+
+## Тесты для averageProgressPercent
+
+- Пустой массив → `assertThatThrownBy(...).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("Пустой список mentee")`.
+- «Круглый» случай → `isEqualTo(50.0)` (или `isCloseTo(50.0, offset(0.01))`).
+- «Некруглый» случай → `isCloseTo(69.444, offset(0.01))` с комментарием-расчётом.
+- Границы → `assertThat(result).isGreaterThan(0).isLessThanOrEqualTo(100)` на массиве,
+  где хотя бы один mentee не завершил курс.
+
+## AssertJ: правила выбора ассерта
+
+- Дробные числа — `isCloseTo(..., offset(...))`, не `isEqualTo`.
+- Коллекции — `extracting(...).containsExactly(...)`, `hasSize(...)`, `allMatch(...)`.
+- Исключения — `assertThatThrownBy(...)` + `isInstanceOf(...)` + `hasMessageContaining(...)`.
+- Цепочки на одном объекте — один `assertThat(...)`.

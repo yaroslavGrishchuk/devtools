@@ -1,5 +1,8 @@
 package ru.mentee.power.devtools.progress;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class ProgressTracker {
 
     /**
@@ -29,5 +32,18 @@ public class ProgressTracker {
         };
 
         System.out.println(new ProgressTracker().calculateTotalProgress(mentees));
+    }
+
+    public double averageProgressPercent(Mentee[] mentees) {
+        if (mentees.length == 0) {
+            throw new IllegalArgumentException("Mentees shouldn't be empty");
+        }
+
+        double arithmeticMean = Arrays
+                .stream(mentees)
+                .map(mentee -> mentee.completedLessons() * 100.0 / mentee.totalLessons())
+                .collect(Collectors.averagingDouble(Double::doubleValue));
+
+        return arithmeticMean;
     }
 }

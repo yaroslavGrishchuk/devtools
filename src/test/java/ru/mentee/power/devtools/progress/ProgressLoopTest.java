@@ -98,7 +98,7 @@ class ProgressLoopTest {
         ProgressTracker pt = new ProgressTracker();
         assertThatThrownBy(() -> pt.averageProgressPercent(new Mentee[0]))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("empty");
+                .hasMessageContaining("Пустой список mentee");
     }
 
     @Test
@@ -133,7 +133,7 @@ class ProgressLoopTest {
                 new Mentee("Иван", "Москва", "Backend разработка", 6, 12),
         };
         assertThat(pt.averageProgressPercent(mentees))
-                .isGreaterThanOrEqualTo(0)
+                .isGreaterThan(0)
                 .isLessThanOrEqualTo(100);
     }
 }

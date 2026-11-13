@@ -36,7 +36,7 @@ public class ProgressTracker {
 
     public double averageProgressPercent(Mentee[] mentees) {
         if (mentees.length == 0) {
-            throw new IllegalArgumentException("Mentees shouldn't be empty");
+            throw new IllegalArgumentException("Пустой список mentee");
         }
 
         double arithmeticMean = Arrays
